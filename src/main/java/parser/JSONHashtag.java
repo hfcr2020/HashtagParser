@@ -2,26 +2,20 @@ package parser;
 
 import com.jayway.jsonpath.JsonPath;
 import org.json.simple.JSONObject;
+import type.Hashtag;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class JSONHashtag {
 
-    private static final String WORKING_DIR = Paths.get("")
-            .toAbsolutePath()
-            .toString();
-
-    public ArrayList<String> getListOfHashtags(String filename) throws IOException {
+    public ArrayList<String> getListOfHashtags(File tikTokFile) throws IOException {
         ArrayList<String> hashtagList = new ArrayList<>();
-
-        File tikTokFile = new File( WORKING_DIR + "/" + filename);
 
         ArrayList<JSONObject> tikTokJson = JsonPath.parse(tikTokFile).read("$");
 
@@ -34,17 +28,26 @@ public class JSONHashtag {
         return hashtagList;
     }
 
-    public HashMap<String, Integer> getFrecuencyMap(List<String> originalList) {
+    static public String getCountryFromFile(String filename) {
+        int initialPos = filename.indexOf("_");
+        int finalPos = filename.indexOf(".json");
+        String country = filename.substring(initialPos + 1, finalPos);
+        return country;
+    }
+
+    public List<Hashtag> getHashtagListOrderedByFrequency(List<String> originalList, String country) {
         List<String> hashtagWithoutDuplicates = originalList
                 .stream()
                 .distinct()
                 .collect(Collectors.toList());
 
-        HashMap<String, Integer> hashTagMap = new HashMap<>();
+        List<Hashtag> hashtagList = new ArrayList<>();
         for (String s: hashtagWithoutDuplicates) {
-            hashTagMap.put(s, Collections.frequency(originalList, s));
+            hashtagList.add(new Hashtag(s, Collections.frequency(originalList, s), country));
         }
 
-        return hashTagMap;
+        Collections.sort(hashtagList, Comparator.comparing(Hashtag::getFrequency).reversed());
+
+        return hashtagList;
     }
 }

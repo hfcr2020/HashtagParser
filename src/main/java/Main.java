@@ -1,21 +1,32 @@
-import parser.JSONHashtag;
-import writer.HashtagWriter;
+import service.FrequencyService;
+import service.SearchService;
+import type.Hashtag;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        String inputFilename = args[0];
-        String outputFilename = args[1];
+        String inputFilename = "tiktok_colombia";
 
-        JSONHashtag parser = new JSONHashtag();
-        HashtagWriter write = new HashtagWriter();
+        FrequencyService frequencyService = new FrequencyService();
+        SearchService searchService = new SearchService();
 
-        ArrayList<String> hash = parser.getListOfHashtags(inputFilename);
-        HashMap<String, Integer> hashFreq = parser.getFrecuencyMap(hash);
-        write.createCSVFile(hashFreq, outputFilename);
+        searchService.generateTrendingFile(inputFilename, "1000");
+        String jsonInputFilename = inputFilename + ".json";
+
+        List<Hashtag> hashFreq = frequencyService.getHashtagListOrderedByFrequencyUsingInputFile(jsonInputFilename);
+
+        List<Hashtag> mostPopularHashtags = hashFreq.subList(0, 1);
+        int count = 0;
+        for (Hashtag h: mostPopularHashtags
+             ) {
+            count++;
+            System.out.println("Top ten: # " + count + " " + h.getName());
+            searchService.generateTiktokFilesForHashtag(h.getName(), "1");
+        }
+
+        searchService.generateTiktokFilesFromDictionary();
     }
 }
