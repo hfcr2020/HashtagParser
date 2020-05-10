@@ -1,29 +1,30 @@
 package service;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
 public class SearchService {
 
-    public void generateTiktokFilesFromDictionary() {
-        Properties wordsFile = new Properties();
+    public void generateTiktokFilesFromDictionary(String numberOfSamples) throws IOException {
+        List<String> words = new ArrayList<>();
+        BufferedReader br = new BufferedReader(new FileReader("dictionary.txt"));
+        String line;
+        while ((line = br.readLine()) != null) {
+            words = Arrays.asList(line.split(","));
+        }
 
-        try (
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("dictionary.properties")) {
-            wordsFile.load(inputStream);
-            List<String> words = Arrays.asList(wordsFile.getProperty("words").split(","));
-            for (String s: words
-                 ) {
-                generateTiktokFilesForHashtag(s, "10");
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (String s: words
+        ) {
+            generateTiktokFilesForHashtag(s, numberOfSamples);
         }
     }
 
@@ -58,6 +59,7 @@ public class SearchService {
     }
 
     public void generateTiktokFilesForHashtag(String hashtagName, String numberOfEntries) {
-        runCommandInCmd("tiktok-scraper hashtag " + hashtagName + " -n " + numberOfEntries +  " -f " + hashtagName + " -t all");
+        String command = "tiktok-scraper hashtag " + hashtagName + " -n " + numberOfEntries +  " -f " + hashtagName + " -t all";
+        runCommandInCmd(command);
     }
 }

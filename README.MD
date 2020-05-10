@@ -7,9 +7,8 @@ the file
 - JRE 1.8.*, can be downloaded [here](https://www.java.com/es/download/])
 
 ## Usage
-In the command line (cmd) run:
-`java -jar HashtagParser-0.1-jar-with-dependencies.jar <inputFile.json> <outputFile.csv> `
-
-**Example**
-
-`java -jar HashtagParser-0.1-jar-with-dependencies.jar trend_file.json hashtag_freq.csv`
+### Version 0.2
+1. Create a dictionary.txt file with all the hashtags that you want to search for
+2. In the command line (cmd) run:
+`java -jar HashtagParser-0.2-jar-with-dependencies.jar`
+3.Follow the instructions, the program will generate a final file called `output.txt`
