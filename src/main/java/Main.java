@@ -20,51 +20,66 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Insert country: ");
-        String country = scanner.next();
-        String inputFilename = "tiktok_" + country; //Trending filename
 
         FrequencyService frequencyService = new FrequencyService();
         SearchService searchService = new SearchService();
         MergeService mergeService = new MergeService();
 
-        System.out.println("Insert number of samples to get for trending topics: ");
-        searchService.generateTrendingFile(inputFilename, scanner.next()); //Number of samples to get
+        System.out.println("Insert country: ");
+        String country = scanner.next();
 
-        List<Hashtag> hashFreq = frequencyService.getHashtagListOrderedByFrequencyUsingInputFile(inputFilename + ".json");
+        String numberOfSamplesForEachTopics = "";
 
-        System.out.println("Insert number of most popular topics to search: ");
-        List<Hashtag> mostPopularHashtags = hashFreq.subList(0, Integer.parseInt(scanner.next())); //Number of top hashtags to get
+        String inputFilename = "tiktok_" + country; //Trending filename
+        System.out.println("What do you want to do? ");
+        System.out.println("1. Merge CSV files in the existing folder ");
+        System.out.println("2. Get tiktok files for hashtags in dictionary.txt file ");
+        System.out.println("3. Generate frequency file for trending topics ");
+        System.out.println("4. Run all steps and generate a final file ");
+        System.out.println("Enter number: ");
+        String option = scanner.next();
+        switch (Integer.parseInt(option)) {
+            case(1):
+                System.out.println("Merging all json files... ");
+                mergeService.mergeAllJsonFilesInDir(inputFilename, country);
+                break;
 
-        System.out.println("For each of these most popular topics, how many samples do you want to get? ");
-        String numberOfSamplesForEachTopics = scanner.next();
+            case(2):
+                System.out.println("How many sample would you like to get? Insert number: ");
+                numberOfSamplesForEachTopics = scanner.next();
+                System.out.println("Now I will run tiktok-scraper for each of the words in the dictionary.txt file ");
+                searchService.generateTiktokFilesFromDictionary(numberOfSamplesForEachTopics);
+                break;
+
+            case (3):
+                System.out.println("How many sample would you like to get? Insert number: ");
+                numberOfSamplesForEachTopics = scanner.next();
+                System.out.println("Insert number of hashtags to search for : ");
+                generateFrequencyFileAndSearchForTopHashtags(scanner.next(), inputFilename, numberOfSamplesForEachTopics);
+                break;
+            case (4):
+                System.out.println("How many sample would you like to get? Insert number: ");
+                numberOfSamplesForEachTopics = scanner.next();
+                System.out.println("Insert number of hashtags to search for : ");
+                generateFrequencyFileAndSearchForTopHashtags(scanner.next(), inputFilename, numberOfSamplesForEachTopics);
+                searchService.generateTiktokFilesFromDictionary(numberOfSamplesForEachTopics);
+                mergeService.mergeAllJsonFilesInDir(inputFilename, country);
+                break;
+        }
+    }
+
+    private static void generateFrequencyFileAndSearchForTopHashtags(String numberOfHashtags, String inputFilename,
+                                                                     String numberOfSamplesForEachTopics) throws IOException {
+        FrequencyService frequencyService = new FrequencyService();
+        SearchService searchService = new SearchService();
+        System.out.println("Insert number of hashtags to search for : ");
+        List<Hashtag> mostPopularHashtags = frequencyService.generateListOfHashtags(inputFilename, numberOfSamplesForEachTopics, numberOfHashtags);
         int count = 0;
         for (Hashtag h: mostPopularHashtags
-             ) {
+        ) {
             count++;
             System.out.println("Top ten: # " + count + " " + h.getName());
             searchService.generateTiktokFilesForHashtag(h.getName(), numberOfSamplesForEachTopics); //Number of samples
         }
-
-        System.out.println("Now I will run tiktok-scraper for each of the words in the dictionary.txt file ");
-        searchService.generateTiktokFilesFromDictionary(numberOfSamplesForEachTopics);
-
-        System.out.println("Merging all json files... ");
-        File jsonFileDir = new File("./");
-
-        List<TiktokScraper> tiktokScraperList = new ArrayList<>();
-
-        for (File file: jsonFileDir.listFiles()) {
-            if (file.getName().contains(".json") && !file.getName().equals(inputFilename)) {
-                String hashtagName = file.getName().substring(0, file.getName().indexOf(".json"));
-                List<TiktokScraper> tempList = mergeService.readTiktokFile(file, country, hashtagName);
-                tiktokScraperList.addAll(tempList);
-            }
-        }
-
-        HashtagWriter writer = new HashtagWriter();
-        writer.createTiktokCSVFile(tiktokScraperList, "output.csv");
-
-
     }
 }

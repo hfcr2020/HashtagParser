@@ -13,6 +13,7 @@ public class TiktokScraper {
 
     String hashtagName;
     String country;
+    String text;
     String id;
     String createTime;
     String authorName;

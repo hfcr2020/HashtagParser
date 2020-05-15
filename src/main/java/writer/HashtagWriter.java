@@ -12,7 +12,7 @@ import java.util.List;
 public class HashtagWriter {
 
     private static final String[] HEADERS = { "HASHTAG", "FREQUENCY", "COUNTRY"};
-    private static final String[] HEADERS_TIKTOK = { "ID", "CREATE_TIME", "AUTHOR_NAME",
+    private static final String[] HEADERS_TIKTOK = { "ID", "CREATE_TIME", "TEXT", "AUTHOR_NAME",
                         "AUTHOR_FOLLOWER", "AUTHOR_FANS", "AUTHOR_HEART", "VIDEO_URL",
                         "VIDEO_DURATION", "DIGG_COUNT", "SHARE_COUNT", "PLAY_COUNT", "COMMENT_COUNT",
                         "HASHTAGS", "COUNTRY", "HASHTAG_NAME" };
@@ -39,6 +39,7 @@ public class HashtagWriter {
             try {
                 printer.printRecord(tiktokScraper.getId(),
                                     tiktokScraper.getCreateTime(),
+                                    tiktokScraper.getText(),
                                     tiktokScraper.getAuthorName(),
                                     tiktokScraper.getAuthorFollowers(),
                                     tiktokScraper.getAuthorFans(),

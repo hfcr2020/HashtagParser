@@ -29,7 +29,8 @@ public class SearchService {
     }
 
     public void generateTrendingFile(String outputFilename, String numberOfEntries) {
-        runCommandInCmd("tiktok-scraper trend -t all " + " -n " + numberOfEntries +  " -f " + outputFilename);
+        runCommandInCmd("tiktok-scraper trend -d false -t all -n " + numberOfEntries +
+                " --timeout 3000 -f " + outputFilename);
     }
 
     public void runCommandInCmd(String command) {
@@ -51,15 +52,14 @@ public class SearchService {
             int exitCode = process.waitFor();
             System.out.println("\nExited with error code : " + exitCode);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     public void generateTiktokFilesForHashtag(String hashtagName, String numberOfEntries) {
-        String command = "tiktok-scraper hashtag " + hashtagName + " -n " + numberOfEntries +  " -f " + hashtagName + " -t all";
+        String command = "tiktok-scraper hashtag " + hashtagName + " -d false -n " + numberOfEntries +  " -f " + hashtagName +
+                " -t json";
         runCommandInCmd(command);
     }
 }

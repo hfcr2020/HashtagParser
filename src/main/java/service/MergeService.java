@@ -3,6 +3,7 @@ package service;
 import com.jayway.jsonpath.JsonPath;
 import org.json.simple.JSONObject;
 import type.TiktokScraper;
+import writer.HashtagWriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class MergeService {
             tiktokSampleList.add(TiktokScraper.builder()
                     .id(JsonPath.parse(sample).read("$.id").toString())
                     .createTime(JsonPath.parse(sample).read("$.createTime").toString())
+                    .text(JsonPath.parse(sample).read("$.text").toString())
                     .authorName(JsonPath.parse(sample).read("$.authorMeta.name").toString())
                     .authorFollowers(JsonPath.parse(sample).read("$.authorMeta.following").toString())
                     .authorFans(JsonPath.parse(sample).read("$.authorMeta.fans").toString())
@@ -35,5 +37,23 @@ public class MergeService {
         }
 
         return tiktokSampleList;
+    }
+
+    public void mergeAllJsonFilesInDir(String inputFilename, String country) throws IOException {
+        MergeService mergeService = new MergeService();
+        File jsonFileDir = new File("./");
+
+        List<TiktokScraper> tiktokScraperList = new ArrayList<>();
+
+        for (File file: jsonFileDir.listFiles()) {
+            if (file.getName().contains(".json") && !file.getName().equals(inputFilename)) {
+                String hashtagName = file.getName().substring(0, file.getName().indexOf(".json"));
+                List<TiktokScraper> tempList = mergeService.readTiktokFile(file, country, hashtagName);
+                tiktokScraperList.addAll(tempList);
+            }
+        }
+
+        HashtagWriter writer = new HashtagWriter();
+        writer.createTiktokCSVFile(tiktokScraperList, "output.csv");
     }
 }

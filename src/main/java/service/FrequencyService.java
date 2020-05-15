@@ -49,4 +49,14 @@ public class FrequencyService {
 
         write.createCSVFile(consolidatedList, outputFileName);
     }
+
+    public List<Hashtag> generateListOfHashtags(String inputFilename, String numberOfSamples, String numberOfHashtags) throws IOException {
+        SearchService searchService = new SearchService();
+        FrequencyService frequencyService = new FrequencyService();
+
+        searchService.generateTrendingFile(inputFilename, numberOfSamples); //Number of samples to get
+
+        List<Hashtag> hashFreq = frequencyService.getHashtagListOrderedByFrequencyUsingInputFile(inputFilename + ".json");
+        return hashFreq.subList(0, Integer.parseInt(numberOfHashtags));
+    }
 }
