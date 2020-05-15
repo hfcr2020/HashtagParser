@@ -1,20 +1,11 @@
-import org.apache.tools.ant.DirectoryScanner;
 import service.FrequencyService;
 import service.MergeService;
 import service.SearchService;
 import type.Hashtag;
-import type.TiktokScraper;
-import writer.HashtagWriter;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static parser.JSONHashtag.getCountryFromFile;
 
 public class Main {
 
