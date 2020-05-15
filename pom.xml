@@ -6,7 +6,7 @@
 
     <groupId>com.pds</groupId>
     <artifactId>HashtagParser</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
     <build>
         <plugins>
             <plugin>
